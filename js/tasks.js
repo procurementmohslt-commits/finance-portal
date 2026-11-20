@@ -6,14 +6,19 @@ export function subscribeTasks(uid, onData, onError) {
     onData(Object.entries(raw).map(([id, task]) => ({ id, ...task })));
   }, onError);
 }
-export function addTask(uid, { name, description, status }) {
+export function addTask(uid, { name, status }) {
   const taskRef = push(ref(database, tasksPath(uid)));
-  return set(taskRef, { name, description, status, createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
+  return set(taskRef, { name, status, createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
 }
-export function editTask(uid, id, { name, description, status }) {
-  return update(ref(database, `${tasksPath(uid)}/${id}`), { name, description, status, updatedAt: serverTimestamp() });
+export function editTask(uid, id, { name, status }) {
+  return update(ref(database, `${tasksPath(uid)}/${id}`), { name, status, updatedAt: serverTimestamp() });
 }
 export function completeTask(uid, id) {
   // Completion intentionally deletes the task permanently, as requested.
   return remove(ref(database, `${tasksPath(uid)}/${id}`));
 }
+
+export function updateTaskStatus(uid, id, status) {
+  return update(ref(database, `${tasksPath(uid)}/${id}`), { status, updatedAt: serverTimestamp() });
+}
+export const deleteTask = completeTask;

@@ -1,30 +1,18 @@
-# Finance Portal — GitHub Pages PWA
+# Finance Portal — Home v4 (Task cards)
 
-## Publish on GitHub Pages
-1. Create a **public** repository named `finance-portal` in your GitHub account.
-2. Upload **the contents of this folder** to the repository root (index.html must be in the root, not inside another folder). Do not upload any private credentials or personal records.
-3. Go to **Settings → Pages → Build and deployment**, select **Deploy from a branch**, branch **main**, folder **/(root)**, then Save.
-4. After deployment, open `https://YOUR-USERNAME.github.io/finance-portal/`. Allow several minutes for deployment.
-5. In Firebase Console → Authentication → Settings → Authorized domains, add `YOUR-USERNAME.github.io` (domain only, without protocol/path).
-6. Open the hosted site and sign in with Google. The same Google account sees the same task data in Firebase.
+Upload all files and folders to the root of your existing GitHub Pages `finance-portal` repository. The same Firebase project, Google sign-in, database paths, and rules remain in place.
 
-## Install
-- Android Chrome: open the hosted site, choose Install app / Add to Home screen.
-- iPhone Safari: Share → Add to Home Screen → Add.
-- The PWA shell can be cached, but Firebase task sync and authentication require network connectivity.
+## Features
+- Responsive cards (no horizontal table scrolling)
+- Task name is the full description; no separate description field
+- Free-text latest status; separate Update Status button
+- Created date, last updated date, days open
+- Edit, Update Status, Complete, Delete actions on each card
+- Search, Firebase live sync, Google sign-in, PWA support
 
-## Structure
-- `index.html`: Home dashboard
-- `css/style.css`: responsive design
-- `js/firebase.js`: Firebase setup and Google sign-in
-- `js/tasks.js`: database task operations
-- `js/app.js`: dashboard UI and search
-- `manifest.json`: install metadata
-- `sw.js`: app-shell service worker
-- `assets/icons`: app icon assets
+## Existing data
+Older tasks with both `name` and `description` keep their existing database records. Cards display `name` (or `description` as a fallback). The old separate `description` value is not displayed or edited. If needed, copy important old description text into the task name before replacing the old workflow. Editing a task does not delete its legacy `description` field.
 
-## Security
-- Firebase web config is intended to be public. Never commit service-account keys.
-- Keep Firebase Realtime Database rules scoped to `users/$uid` with Google-authenticated ownership checks.
-- GitHub Pages site source is public. Firebase rules, not hidden JavaScript, protect your data.
-- Firebase popup sign-in may not work in all installed PWA browsers; if this happens, sign in via the regular browser first or implement a redirect flow with a suitable auth domain.
+**Complete** and **Delete** both permanently remove the record after confirmation.
+
+After deployment, reload the page to update the service worker.

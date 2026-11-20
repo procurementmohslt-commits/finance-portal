@@ -1,5 +1,5 @@
 import { auth, loginWithGoogle, logout, connectFirebase, onAuthStateChanged } from './firebase.js';
-import { subscribeTasks, addTask, editTask, completeTask } from './tasks.js';
+import { subscribeTasks, addTask, editTask, completeTask, updateTaskStatus, deleteTask } from './tasks.js';
 const $ = id => document.getElementById(id);
 const state = { user: null, tasks: [], query: '', editingId: null, unsubscribe: null, authVersion: 0 };
 const formatDate = ms => typeof ms === 'number' ? new Date(ms).toLocaleString() : 'Saving…';
@@ -9,34 +9,63 @@ function notice(message, kind = '') { $('auth-message').textContent = message; $
 function render() {
   const tasks = [...state.tasks].sort((a,b) => (b.updatedAt || 0) - (a.updatedAt || 0));
   $('total').textContent = state.user ? tasks.length : '—';
-  $('progress').textContent = state.user ? tasks.filter(t => t.status === 'In progress').length : '—';
+  $('progress').textContent = state.user ? tasks.filter(t => typeof t.updatedAt === 'number' && new Date(t.updatedAt).toDateString() === new Date().toDateString()).length : '—';
   const last = tasks.reduce((max,t) => Math.max(max, typeof t.updatedAt === 'number' ? t.updatedAt : 0),0);
   $('last-update').textContent = state.user ? (last ? new Date(last).toLocaleDateString() : '—') : '—';
-  if (!state.user) { $('task-rows').innerHTML = '<tr><td colspan="5" class="empty">Sign in to view your tasks.</td></tr>'; return; }
-  if (!tasks.length) { $('search-count').textContent = ''; $('task-rows').innerHTML = '<tr><td colspan="5" class="empty">No ongoing tasks yet. Click “Add task” to begin.</td></tr>'; return; }
+  if (!state.user) { $('task-cards').innerHTML = '<p class="empty">Sign in to view your tasks.</p>'; return; }
+  if (!tasks.length) { $('search-count').textContent = ''; $('task-cards').innerHTML = '<p class="empty">No ongoing tasks yet. Click “Add task” to begin.</p>'; return; }
   const query = state.query.trim().toLocaleLowerCase();
   const visibleTasks = query ? tasks.filter(t => [t.name, t.description, t.status].some(value => String(value ?? '').toLocaleLowerCase().includes(query))) : tasks;
   $('search-count').textContent = query ? `${visibleTasks.length} of ${tasks.length} tasks found` : `${tasks.length} ongoing task${tasks.length === 1 ? '' : 's'}`;
-  if (!visibleTasks.length) { $('task-rows').innerHTML = '<tr><td colspan="5" class="empty">No matching tasks found. Try a different search.</td></tr>'; return; }
-  $('task-rows').innerHTML = visibleTasks.map(t => `<tr class="task-row" data-id="${escapeHTML(t.id)}" tabindex="0" role="button" aria-label="Open ${escapeHTML(t.name)}"><td>${escapeHTML(t.name)}</td><td class="description-cell" title="${escapeHTML(t.description)}">${escapeHTML(t.description) || '—'}</td><td><span class="pill ${t.status === 'On hold' ? 'hold' : t.status === 'Waiting' ? 'wait' : t.status === 'Not started' ? 'new' : ''}">${escapeHTML(t.status)}</span></td><td>${daysOpen(t.createdAt)}</td><td>${escapeHTML(formatDate(t.updatedAt))}</td></tr>`).join('');
+  if (!visibleTasks.length) { $('task-cards').innerHTML = '<p class="empty">No matching tasks found. Try a different search.</p>'; return; }
+  $('task-cards').innerHTML = visibleTasks.map(t => `
+    <article class="task-card" data-id="${escapeHTML(t.id)}">
+      <div class="task-card-top"><div class="task-card-title-wrap"><span class="task-card-kicker">ONGOING WORK</span><h3>${escapeHTML(t.name || t.description || 'Untitled task')}</h3></div><span class="days-badge">${daysOpen(t.createdAt)} days open</span></div>
+      <div class="latest-status"><span class="field-caption">Status / latest update</span><p>${escapeHTML(t.status) || '<span class="muted">No update yet</span>'}</p></div>
+      <div class="task-dates"><span><b>Created</b>${escapeHTML(formatDate(t.createdAt))}</span><span><b>Last updated</b>${escapeHTML(formatDate(t.updatedAt))}</span></div>
+      <div class="card-actions"><button type="button" class="ghost" data-action="edit">Edit</button><button type="button" class="primary" data-action="status">Update status</button><button type="button" class="complete-button" data-action="complete">Complete</button><button type="button" class="danger" data-action="delete">Delete</button></div>
+    </article>`).join('');
 }
 $('task-search').addEventListener('input', e => { state.query = e.target.value; $('clear-search').hidden = !state.query; render(); });
 $('clear-search').addEventListener('click', () => { state.query = ''; $('task-search').value = ''; $('clear-search').hidden = true; render(); $('task-search').focus(); });
-function openDialog(id = null) {
+let dialogMode = 'edit';
+function openDialog(id = null, mode = 'edit') {
   const task = state.tasks.find(t => t.id === id);
   state.editingId = task?.id ?? null;
+  dialogMode = mode;
   $('task-form').reset(); $('form-error').textContent = '';
-  $('dialog-title').textContent = task ? 'Task details' : 'Add task';
-  $('task-name').value = task?.name ?? '';
-  $('task-description').value = task?.description ?? '';
-  $('task-status').value = task?.status ?? 'Not started';
+  $('dialog-title').textContent = !task ? 'Add task' : mode === 'status' ? 'Update status' : 'Edit task';
+  $('task-name').value = task?.name || task?.description || '';
+  $('task-status').value = task?.status ?? '';
+  $('task-name').hidden = mode === 'status';
+  document.querySelector('label[for="task-name"]').hidden = mode === 'status';
+  $('task-name').required = mode !== 'status';
   $('complete-task').hidden = !task;
+  $('delete-task').hidden = !task;
+  $('save-task').textContent = mode === 'status' ? 'Save status update' : 'Save task';
   $('task-meta').hidden = !task;
   if (task) $('task-meta').textContent = `Created: ${formatDate(task.createdAt)}  ·  Last updated: ${formatDate(task.updatedAt)}  ·  Days open: ${daysOpen(task.createdAt)}`;
   $('task-dialog').showModal();
 }
-$('task-rows').addEventListener('click', e => { const row = e.target.closest('[data-id]'); if (row) openDialog(row.dataset.id); });
-$('task-rows').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { const row = e.target.closest('[data-id]'); if (row) { e.preventDefault(); openDialog(row.dataset.id); } } });
+async function removeTask(id, action) {
+  if (!state.user || !id) return;
+  const wording = action === 'complete' ? 'Complete this task and permanently remove it from Firebase?' : 'Permanently delete this task from Firebase?';
+  if (!confirm(`${wording} This cannot be undone.`)) return;
+  try {
+    if (action === 'complete') await completeTask(state.user.uid, id);
+    else await deleteTask(state.user.uid, id);
+    if ($('task-dialog').open) $('task-dialog').close();
+  } catch (err) { alert(`Could not remove task: ${err.message}`); }
+}
+$('task-cards').addEventListener('click', e => {
+  const button = e.target.closest('button[data-action]');
+  if (!button) return;
+  const id = button.closest('.task-card')?.dataset.id;
+  if (!id) return;
+  if (button.dataset.action === 'edit') openDialog(id);
+  if (button.dataset.action === 'status') openDialog(id, 'status');
+  if (button.dataset.action === 'complete' || button.dataset.action === 'delete') removeTask(id, button.dataset.action);
+});
 $('add-task').addEventListener('click', () => openDialog());
 $('close-dialog').addEventListener('click', () => $('task-dialog').close());
 $('cancel-dialog').addEventListener('click', () => $('task-dialog').close());
@@ -44,24 +73,19 @@ $('task-form').addEventListener('submit', async e => {
   e.preventDefault();
   if (!state.user) return;
   const name = $('task-name').value.trim();
-  if (!name) { $('form-error').textContent = 'Enter a task name.'; return; }
-  const values = { name, description: $('task-description').value.trim(), status: $('task-status').value };
+  if (dialogMode !== 'status' && !name) { $('form-error').textContent = 'Enter a task name.'; return; }
+  const values = { name, status: $('task-status').value.trim() };
   $('save-task').disabled = true; $('form-error').textContent = '';
   try {
-    if (state.editingId) await editTask(state.user.uid, state.editingId, values);
+    if (state.editingId && dialogMode === 'status') await updateTaskStatus(state.user.uid, state.editingId, values.status);
+    else if (state.editingId) await editTask(state.user.uid, state.editingId, values);
     else await addTask(state.user.uid, values);
     $('task-dialog').close();
   } catch (err) { $('form-error').textContent = `Could not save: ${err.message}`; }
   finally { $('save-task').disabled = false; }
 });
-$('complete-task').addEventListener('click', async () => {
-  if (!state.user || !state.editingId) return;
-  if (!confirm('Mark this task complete and permanently delete it from Firebase? This cannot be undone.')) return;
-  $('complete-task').disabled = true; $('form-error').textContent = '';
-  try { await completeTask(state.user.uid, state.editingId); $('task-dialog').close(); }
-  catch (err) { $('form-error').textContent = `Could not delete: ${err.message}`; }
-  finally { $('complete-task').disabled = false; }
-});
+$('complete-task').addEventListener('click', () => removeTask(state.editingId, 'complete'));
+$('delete-task').addEventListener('click', () => removeTask(state.editingId, 'delete'));
 $('login').addEventListener('click', async () => {
   $('login').disabled = true;
   try { await loginWithGoogle(); } catch (err) { notice(`Google sign-in failed: ${err.message}`, 'bad'); }

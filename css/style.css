@@ -2,3 +2,28 @@
 
 /* Home v2: responsive live task search */
 .search-area{padding:0 23px 18px}.search-area label{margin:0 0 8px}.search-control{display:flex;gap:9px;align-items:center}.search-control input{min-width:0;flex:1}.search-control button{flex-shrink:0}.search-count{margin:8px 0 0;color:#718197;font-size:12px;min-height:16px}@media(max-width:800px){.search-area{padding:0 18px 16px}}
+
+/* v3.1: free-text status displayed naturally in task rows */
+.status-text{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;white-space:pre-wrap;overflow-wrap:anywhere;max-width:300px;line-height:1.5;color:#2e4d6e}
+#task-status{min-height:110px}
+
+/* v4: mobile-first full-width task cards, no horizontal table */
+.task-cards{display:grid;grid-template-columns:1fr;gap:14px;padding:0 23px 23px}
+.task-card{border:1px solid #e1e8f1;background:#fff;border-radius:16px;padding:19px;box-shadow:0 4px 14px #2035500a;min-width:0}
+.task-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.task-card-title-wrap{min-width:0;flex:1}
+.task-card-kicker,.field-caption{font-size:11px;font-weight:800;letter-spacing:.5px;color:#68829f;text-transform:uppercase}
+.task-card h3{font-size:17px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere;margin:7px 0 15px;color:#162d49}
+.days-badge{flex-shrink:0;border-radius:50px;background:#eaf2ff;color:#2059a1;padding:7px 10px;font-size:11px;font-weight:750}
+.latest-status{background:#f3f7fc;border-radius:11px;padding:13px 14px}
+.latest-status p{margin:8px 0 0;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.55;color:#243f5d;font-size:14px}
+.muted{color:#8491a2}
+.task-dates{display:flex;flex-wrap:wrap;gap:14px 25px;margin:15px 0;font-size:12px;color:#556b84}
+.task-dates span{display:flex;flex-direction:column;gap:4px}
+.task-dates b{font-size:11px;color:#8291a3}
+.card-actions{display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid #edf1f6;padding-top:15px}
+.card-actions button{font-size:12px;padding:10px 12px}
+.complete-button{background:#e1f5e9;color:#166b40}
+@media(min-width:1050px){.task-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:800px){.task-cards{padding:0 16px 18px}}
+@media(max-width:480px){.task-card{padding:15px}.task-card-top{flex-direction:column;gap:4px}.days-badge{order:-1}.card-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.card-actions button{width:100%}}
