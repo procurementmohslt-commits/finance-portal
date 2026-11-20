@@ -27,3 +27,22 @@
 @media(min-width:1050px){.task-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:800px){.task-cards{padding:0 16px 18px}}
 @media(max-width:480px){.task-card{padding:15px}.task-card-top{flex-direction:column;gap:4px}.days-badge{order:-1}.card-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.card-actions button{width:100%}}
+
+/* v5: clear visual separation between canvas and work cards */
+:root{background:#e9eff6}
+body{background:#e9eff6;color:#142b46}
+main{background:transparent}
+.panel{background:#f2f5fa;border:1px solid #d4deea;box-shadow:0 7px 24px rgba(22,48,80,.09)}
+.summary article{background:#fff;border:1px solid #cfdae7;box-shadow:0 3px 12px rgba(20,44,74,.06)}
+.task-cards{gap:18px}
+.task-card{background:#fff;border:2px solid #c4d2e2;border-left:5px solid #2769c3;border-radius:16px;box-shadow:0 8px 22px rgba(16,45,80,.13);padding:20px}
+.task-card h3{color:#102943;font-weight:750}
+.latest-status{background:#eaf2fc;border:1px solid #cbdff6}
+.latest-status p{color:#183956}
+.task-dates{color:#3c536d}
+.task-dates b{color:#506781}
+.card-actions{border-top:1px solid #dbe5f0}
+.card-actions .ghost{background:#e7eef8;color:#183f6b}
+.card-actions .complete-button{background:#d8f1e2;color:#145b38}
+.card-actions .danger{background:#fce4e2;color:#9b2424}
+@media(max-width:480px){.task-card{padding:16px}.task-cards{gap:14px}}

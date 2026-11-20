@@ -16,3 +16,6 @@ Older tasks with both `name` and `description` keep their existing database reco
 **Complete** and **Delete** both permanently remove the record after confirmation.
 
 After deployment, reload the page to update the service worker.
+
+## v5 visual update
+Higher-contrast task cards on a pale blue-gray background, darker borders, a blue accent edge, stronger shadow, and a tinted status area. No changes to Firebase paths or task logic. The service-worker cache is versioned v5 to pick up the CSS changes.
