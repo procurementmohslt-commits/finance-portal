@@ -46,3 +46,21 @@ main{background:transparent}
 .card-actions .complete-button{background:#d8f1e2;color:#145b38}
 .card-actions .danger{background:#fce4e2;color:#9b2424}
 @media(max-width:480px){.task-card{padding:16px}.task-cards{gap:14px}}
+/* Office / functional area directory */
+.offices-dialog{width:min(760px,calc(100vw - 20px));max-height:92dvh;border:1px solid #c5d3e4;border-radius:18px;padding:0;background:#f4f7fb;color:#142b46}
+.offices-dialog::backdrop,.editor-dialog::backdrop{background:rgba(10,25,45,.62)}
+.offices-wrap{padding:22px;overflow:auto;max-height:92dvh}
+.office-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin:18px 0}
+.office-toolbar label{width:100%;font-weight:700;font-size:12px}
+.office-toolbar select{flex:1;min-width:170px;max-width:100%;padding:11px;border:1px solid #a9bfd9;border-radius:9px;background:white;color:#142b46}
+.office-info{padding:14px;background:#e4eefb;border:1px solid #bdd2ed;border-radius:11px;font-weight:750;line-height:1.5}
+.office-area-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:17px 0 10px}
+.office-area-heading h3{margin:0;font-size:17px}
+.areas-list{display:grid;gap:9px;margin:14px 0}
+.area-row{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#fff;border:1px solid #c8d5e4;border-left:4px solid #2769c3;border-radius:11px;padding:12px}
+.area-row strong{font-size:13px;overflow-wrap:anywhere}
+.area-row p{font-size:13px;margin:5px 0 0;overflow-wrap:anywhere;white-space:pre-wrap}
+.area-actions{display:flex;gap:6px;flex-shrink:0}.area-actions button{padding:8px;font-size:12px}
+.editor-dialog{width:min(480px,calc(100vw - 20px));border:1px solid #c5d3e4;border-radius:16px;padding:20px;background:#fff;color:#142b46}
+.editor-dialog form{display:grid;gap:10px}.editor-dialog input,.editor-dialog textarea{width:100%;box-sizing:border-box;border:1px solid #b5c6d9;border-radius:9px;padding:12px;font:inherit}.editor-dialog label{font-weight:700;font-size:13px}
+@media(max-width:480px){.offices-wrap{padding:15px}.office-toolbar select{flex-basis:100%}.area-row{align-items:stretch;flex-direction:column}.area-actions button{flex:1}.area-actions{width:100%}}

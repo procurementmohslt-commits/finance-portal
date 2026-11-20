@@ -1,21 +1,23 @@
-# Finance Portal — Home v4 (Task cards)
+# Finance Portal v6 — Functional Areas
 
-Upload all files and folders to the root of your existing GitHub Pages `finance-portal` repository. The same Firebase project, Google sign-in, database paths, and rules remain in place.
+Includes previous Home v5 tasks, Firebase Google sign-in, PWA files, and a new Functional Area modal.
 
-## Features
-- Responsive cards (no horizontal table scrolling)
-- Task name is the full description; no separate description field
-- Free-text latest status; separate Update Status button
-- Created date, last updated date, days open
-- Edit, Update Status, Complete, Delete actions on each card
-- Search, Firebase live sync, Google sign-in, PWA support
+## Deploy
+Upload the **contents** of this folder (not its enclosing folder) to the root of your existing GitHub Pages repository. Commit and wait for deployment, then refresh the website. No Firebase rules changes needed: office data lives under `users/<uid>/offices`.
 
-## Existing data
-Older tasks with both `name` and `description` keep their existing database records. Cards display `name` (or `description` as a fallback). The old separate `description` value is not displayed or edited. If needed, copy important old description text into the task name before replacing the old workflow. Editing a task does not delete its legacy `description` field.
+## First use
+Sign in with Google, click **Functional Area**, then click **Import 4 supplied offices**. The import only works when the offices collection is empty; it does not automatically alter the database. Import contains 69 supplied functional areas across 4 offices, preserving their descriptions exactly as supplied, including truncated words and typos. Edit those later in the modal if needed.
 
-**Complete** and **Delete** both permanently remove the record after confirmation.
+## Operations
+Switch offices via dropdown; add/edit/delete offices; add/edit/delete functional areas; search codes and descriptions. Deleting an office also deletes all its functional areas. Functional area codes are strings and may occur in different offices. All writes are scoped to the signed-in Google UID. Existing tasks are untouched.
 
-After deployment, reload the page to update the service worker.
+## Note
+This is a personal project. Don't commit service-account keys or private financial data to GitHub. Firebase web config is client-side and protected by database rules.
 
-## v5 visual update
-Higher-contrast task cards on a pale blue-gray background, darker borders, a blue accent edge, stronger shadow, and a tinted status area. No changes to Firebase paths or task logic. The service-worker cache is versioned v5 to pick up the CSS changes.
+
+## v7 update
+- Replaced colorful icon with minimal navy-and-white F logo.
+- Removed Install app button from the Home page and its JavaScript listener.
+- PWA manifest and service worker remain, so browser-menu installation is still possible.
+- Cache version bumped to v7 for GitHub Pages updates.
+- No Firebase configuration, rules, task data, or office data changed.

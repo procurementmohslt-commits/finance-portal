@@ -105,6 +105,3 @@ onAuthStateChanged(auth, async user => {
 // Update elapsed-day counters while the portal remains open.
 setInterval(() => { if (state.user && !$('task-dialog').open) render(); }, 60000);
 if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(console.error));
-let installPrompt;
-window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installPrompt = e; $('install').hidden = false; });
-$('install').addEventListener('click', async () => { if (!installPrompt) return; await installPrompt.prompt(); installPrompt = null; $('install').hidden = true; });
